@@ -1,0 +1,8 @@
+# flutter_native_splash.yaml
+
+flutter_native_splash:
+  image: assets/images/task_wallet.png
+  color: "#2F2F2F"
+  fill: true
+  android: true
+  ios: true
