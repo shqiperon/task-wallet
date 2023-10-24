@@ -18,7 +18,10 @@ class TaskList extends ConsumerWidget {
       return Center(
         child: Text(
           'No tasks added yet.',
-          style: Theme.of(context).textTheme.bodyLarge,
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge!
+              .copyWith(color: Colors.white),
         ),
       );
     }

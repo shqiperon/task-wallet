@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:task_wallet/models/task.dart';
 import 'package:task_wallet/providers/tasks_provider.dart';
 import 'package:task_wallet/screens/task.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 final formatter = DateFormat.yMd();
 
@@ -22,6 +26,58 @@ class _NewTaskState extends ConsumerState<NewTask> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> scheduleTaskNotification(Task task) async {
+    tz.initializeTimeZones();
+    // Obtain the device's current timezone
+    //final String timeZoneName = tz.local.name;
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'task_channel_id',
+      'Task Notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+      enableVibration: true,
+    );
+
+    const platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    // Calculate the notification time using the task's date and time
+    final taskDate = DateTime.parse(task.date);
+    final taskTime = TimeOfDay(
+      hour: task.time.hour,
+      minute: task.time.minute,
+    );
+
+    // Convert the task's date and time to a TZDateTime object
+    tz.initializeTimeZones();
+    final location = tz.getLocation(
+        'Europe/Tirane'); // replace with timeZoneName if you want to get location dynamically
+    final notificationTime = tz.TZDateTime(
+      location,
+      taskDate.year,
+      taskDate.month,
+      taskDate.day,
+      taskTime.hour,
+      taskTime.minute,
+    );
+
+    // Schedule the notification
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0, // Notification ID
+      'Task Reminder',
+      'Task: ${task.title}',
+      notificationTime,
+      platformChannelSpecifics,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
 
   void _presentDatePicker() async {
     final now = DateTime.now();
@@ -36,6 +92,33 @@ class _NewTaskState extends ConsumerState<NewTask> {
     setState(() {
       _selectedDate = pickedDate;
     });
+  }
+
+  void _presentTimePicker() async {
+    final now = DateTime.now();
+    final initialTime = _selectedTime ?? TimeOfDay.fromDateTime(now);
+
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData(
+            primarySwatch: Colors.blue, // You can customize the color here
+            textTheme: const TextTheme(
+              titleMedium: TextStyle(fontSize: 20), // Adjust the font size here
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedTime != null) {
+      setState(() {
+        _selectedTime = pickedTime;
+      });
+    }
   }
 
   void _submitNewTask() {
@@ -65,7 +148,17 @@ class _NewTaskState extends ConsumerState<NewTask> {
     ref.read(tasksProvider.notifier).addTask(
         _titleController.text,
         _descriptionController.text,
-        _selectedDate!.toIso8601String().substring(0, 10));
+        _selectedDate!.toIso8601String().substring(0, 10),
+        _selectedTime!);
+
+    // Schedule the notification here
+    scheduleTaskNotification(Task(
+      title: _titleController.text,
+      description: _descriptionController.text,
+      date: _selectedDate!.toIso8601String().substring(0, 10),
+      time: _selectedTime!,
+    ));
+
     Navigator.pop(context);
     widget.setFilter(TaskFilter.all);
   }
@@ -88,16 +181,27 @@ class _NewTaskState extends ConsumerState<NewTask> {
       child: Column(
         children: [
           TextField(
+            style: const TextStyle(color: Colors.white),
             controller: _titleController,
-            decoration: const InputDecoration(labelText: 'Task title'),
+            decoration: const InputDecoration(
+                labelStyle: TextStyle(
+                  color: Colors.white,
+                ),
+                labelText: 'Task title'),
             maxLength: 50,
           ),
           Row(
             children: [
               Expanded(
                 child: TextField(
+                  style: const TextStyle(color: Colors.white),
                   controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
+                  decoration: const InputDecoration(
+                    labelStyle: TextStyle(
+                      color: Colors.white,
+                    ),
+                    labelText: 'Description',
+                  ),
                   maxLength: 50,
                 ),
               ),
@@ -107,17 +211,43 @@ class _NewTaskState extends ConsumerState<NewTask> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     _selectedDate == null
-                        ? const Text('No date chosen')
+                        ? const Text(
+                            'No date chosen',
+                            style: TextStyle(color: Colors.white),
+                          )
                         : Text(
                             formatter.format(_selectedDate!),
+                            style: const TextStyle(color: Colors.white),
                           ),
                     IconButton(
                       onPressed: _presentDatePicker,
-                      icon: const Icon(Icons.calendar_month),
+                      icon: const Icon(
+                        Icons.calendar_month,
+                        color: Colors.white,
+                      ),
                     )
                   ],
                 ),
               ),
+            ],
+          ),
+          Row(
+            children: [
+              _selectedTime == null
+                  ? const Text(
+                      'Select time',
+                      style: TextStyle(color: Colors.white),
+                    )
+                  : Text(
+                      '${_selectedTime!.hour}:${_selectedTime!.minute}',
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+              IconButton(
+                  onPressed: _presentTimePicker,
+                  icon: const Icon(
+                    Icons.access_time_filled_outlined,
+                    color: Colors.white,
+                  ))
             ],
           ),
           const SizedBox(height: 15),
@@ -128,6 +258,10 @@ class _NewTaskState extends ConsumerState<NewTask> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
+                style: ButtonStyle(
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.black),
+                ),
                 child: const Text('Cancel'),
               ),
               const SizedBox(
@@ -135,6 +269,10 @@ class _NewTaskState extends ConsumerState<NewTask> {
               ),
               ElevatedButton(
                 onPressed: _submitNewTask,
+                style: ButtonStyle(
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.black),
+                ),
                 child: const Text('Add task'),
               ),
             ],

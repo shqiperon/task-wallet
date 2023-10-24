@@ -30,6 +30,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
 
   void _openAddTasksOverlay() {
     showModalBottomSheet(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       isScrollControlled: true,
       context: context,
       builder: (context) => NewTask(setFilter: setFilter),
@@ -61,14 +62,16 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: const Color.fromARGB(255, 70, 69, 69),
       appBar: AppBar(
+        foregroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 47, 47, 47),
         title: Text(
           'Tasks',
           style: Theme.of(context)
               .textTheme
               .titleLarge!
-              .copyWith(color: Colors.black),
+              .copyWith(color: Colors.white),
         ),
         actions: [
           IconButton(
@@ -93,22 +96,29 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                               .textTheme
                               .bodyLarge!
                               .copyWith(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.white),
                         ),
                       )
                     : Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           'All',
-                          style:
-                              Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.white),
                         ),
                       ),
                 const Spacer(),
-                const Text('Filter'),
+                const Text(
+                  'Filter',
+                  style: TextStyle(color: Colors.white),
+                ),
                 PopupMenuButton<TaskFilter>(
                   onSelected: (filter) {
                     setState(() {
@@ -126,7 +136,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                       child: Text('Today'),
                     ),
                   ],
-                  icon: const Icon(Icons.filter_alt),
+                  icon: const Icon(Icons.filter_alt, color: Colors.white),
                 ),
               ],
             ),
@@ -137,7 +147,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
               builder: (context, snapshot) =>
                   snapshot.connectionState == ConnectionState.waiting
                       ? const Center(
-                          child: CircularProgressIndicator(),
+                          child: CircularProgressIndicator(color: Colors.white),
                         )
                       : TaskList(tasks: _filteredTasks),
             ),
