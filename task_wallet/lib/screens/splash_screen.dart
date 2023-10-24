@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_wallet/screens/home_screen.dart';
+import 'package:task_wallet/screens/main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -19,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(
         const Duration(seconds: 3)); // Adjust the duration as needed
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (context) => const HomeScreen(),
+      builder: (context) => const MainScreen(),
     ));
   }
 
