@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_wallet/models/expense.dart';
 import 'package:task_wallet/providers/expense_provider.dart';
-import 'package:task_wallet/widgets/circular_chart.dart';
+import 'package:task_wallet/widgets/circular_chart/circular_chart.dart';
 import 'package:task_wallet/widgets/expenses/expenses_list.dart';
 import 'package:task_wallet/widgets/expenses/new_expense.dart';
 import 'package:task_wallet/widgets/filter_row.dart';
