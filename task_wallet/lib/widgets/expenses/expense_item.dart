@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:task_wallet/models/expense.dart';
+import 'package:task_wallet/widgets/filter_row.dart';
 
 class ExpenseItem extends StatelessWidget {
   const ExpenseItem(this.expense, {super.key});
 
   final Expense expense;
-
-  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
   @override
   Widget build(BuildContext context) {

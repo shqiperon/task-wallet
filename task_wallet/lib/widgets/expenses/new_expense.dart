@@ -76,7 +76,13 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
             children: [
               TextFormField(
                 maxLength: 30,
-                decoration: const InputDecoration(labelText: 'Title'),
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  labelStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
@@ -99,8 +105,17 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
-                          labelText: 'Price', prefixText: '\$ '),
+                        labelText: 'Price',
+                        prefixText: '\$ ',
+                        prefixStyle: TextStyle(
+                          color: Colors.white,
+                        ),
+                        labelStyle: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
@@ -126,15 +141,19 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                   Expanded(
                     child: DropdownButtonFormField(
                       value: _selectedCategory,
+                      dropdownColor: const Color.fromARGB(255, 47, 47, 47),
                       items: [
                         for (final category in categories.entries)
                           DropdownMenuItem(
                             value: category.value,
                             child: Row(
                               children: [
-                                Icon(category.value.icon),
+                                Icon(category.value.icon, color: Colors.white),
                                 const SizedBox(width: 8),
-                                Text(category.value.title),
+                                Text(
+                                  category.value.title,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
@@ -154,11 +173,15 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                   SizedBox(
                     width: 200,
                     child: DropdownButtonFormField<String>(
+                      dropdownColor: const Color.fromARGB(255, 47, 47, 47),
                       value: _selectedMonth,
                       items: monthNames.map((month) {
                         return DropdownMenuItem<String>(
                           value: month,
-                          child: Text(month),
+                          child: Text(
+                            month,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -177,7 +200,7 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                 ],
               ),
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -186,11 +209,19 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: _saveExpense,
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.black),
+                    ),
                     child: const Text('Add expense'),
                   )
                 ],

@@ -34,8 +34,6 @@ class ExpensesScreen extends ConsumerStatefulWidget {
 
 class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   late Future<void> _expensesFuture;
-  // final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  //     GlobalKey<RefreshIndicatorState>();
 
   ExpenseFilter _currentFilter = ExpenseFilter.all;
   List<Expense> _filteredExpenses = [];
@@ -71,31 +69,11 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       _currentFilter = filter;
       _filterExpenses();
     });
-    _updateChart();
   }
 
   Future<void> _handleRefresh() async {
     await ref.read(expenseProvider.notifier).loadExpenses(widget.year);
-    _updateChart();
-  }
-
-  void _updateChart() {
-    if (_currentFilter == ExpenseFilter.all) {
-      final expenses = ref.read(expenseProvider);
-      setState(() {
-        _filteredExpenses = expenses;
-      });
-    } else {
-      final expenses = ref.read(expenseProvider);
-      setState(() {
-        _filteredExpenses = expenses.where((expense) {
-          final month = expense.month.toLowerCase();
-          final filterMonth =
-              _currentFilter.toString().split('.').last.toLowerCase();
-          return month == filterMonth;
-        }).toList();
-      });
-    }
+    _filterExpenses();
   }
 
   void addExpense() {
@@ -154,7 +132,11 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 future: _expensesFuture,
                 builder: (context, snapshot) =>
                     snapshot.connectionState == ConnectionState.waiting
-                        ? const Center(child: CircularProgressIndicator())
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
                         : ExpensesList(
                             expenses: _filteredExpenses,
                             onHandleRefresh: _handleRefresh),
