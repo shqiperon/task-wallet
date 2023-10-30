@@ -52,7 +52,13 @@ class _NewYearState extends ConsumerState<NewYear> {
                     RegExp("[0-9]"),
                   ),
                 ],
-                decoration: const InputDecoration(labelText: 'Year'),
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'Year',
+                  labelStyle: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
@@ -89,24 +95,18 @@ class _NewYearState extends ConsumerState<NewYear> {
                       Navigator.pop(context);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.pressed)) {
-                            return Theme.of(context)
-                                .colorScheme
-                                .background
-                                .withOpacity(0.5);
-                          }
-                          return null; // Use the component's default.
-                        },
-                      ),
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
                     onPressed: _saveYear,
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.black),
+                    ),
                     child: const Text('Add Year'),
                   )
                 ],

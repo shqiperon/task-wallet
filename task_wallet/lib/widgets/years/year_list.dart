@@ -15,33 +15,123 @@ class YearList extends ConsumerStatefulWidget {
 }
 
 class _YearListState extends ConsumerState<YearList> {
-  // Year? _removedYear;
-  // Future<bool> _showDeleteConfirmationDialog(BuildContext context) async {
-  //   return await showDialog<bool>(
-  //         context: context,
-  //         builder: (context) {
-  //           return AlertDialog(
-  //             title: const Text('Confirm Deletion'),
-  //             content: const Text('Are you sure you want to delete this year?'),
-  //             actions: <Widget>[
-  //               TextButton(
-  //                 onPressed: () {
-  //                   Navigator.of(context).pop(false); // User canceled deletion
-  //                 },
-  //                 child: const Text('Cancel'),
-  //               ),
-  //               TextButton(
-  //                 onPressed: () {
-  //                   Navigator.of(context).pop(true); // User confirmed deletion
-  //                 },
-  //                 child: const Text('Delete'),
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       ) ??
-  //       false;
-  // }
+  void _showDeleteConfirmationDialog(BuildContext context, int index) async {
+    final removedYear = widget.years[index];
+
+    setState(() {
+      widget.years.removeAt(index);
+    });
+
+    final isConfirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: Text(
+            'Do you want to delete expenses of ${removedYear.year}?',
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          actions: <Widget>[
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.white)),
+            ),
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child:
+                  const Text('Delete', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (isConfirmed == true) {
+      ref.read(yearProvider.notifier).removeYear(removedYear.id);
+    } else {
+      setState(() {
+        widget.years.insert(index, removedYear);
+      });
+    }
+  }
+
+  Future<void> _navigateToExpenses(BuildContext context, Year year) async {
+    final formKey = GlobalKey<FormState>();
+    final bool? isPasswordCorrect = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'Enter password to unlock expenses',
+            textAlign: TextAlign.center,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          content: Form(
+            key: formKey,
+            child: TextFormField(
+              style: const TextStyle(color: Colors.white),
+              validator: (value) {
+                if (value == null || value.isEmpty || value != year.password) {
+                  return 'Password incorret';
+                }
+                return null;
+              },
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelStyle: TextStyle(
+                  color: Colors.white,
+                ),
+                labelText: 'Password',
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+              ),
+              child: const Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (isPasswordCorrect == true) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ExpensesScreen(year: year.year),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +139,10 @@ class _YearListState extends ConsumerState<YearList> {
       return Center(
         child: Text(
           'No years added yet.',
-          style: Theme.of(context).textTheme.bodyLarge,
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge!
+              .copyWith(color: Colors.white),
         ),
       );
     }
@@ -60,17 +153,20 @@ class _YearListState extends ConsumerState<YearList> {
           final year = widget.years[index];
           return GestureDetector(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ExpensesScreen(year: year.year),
-                ),
-              );
+              if (year.password == null) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ExpensesScreen(year: year.year),
+                  ),
+                );
+              } else {
+                _navigateToExpenses(context, year);
+              }
             },
             child: Dismissible(
               key: ValueKey(widget.years[index]),
               onDismissed: (direction) async {
-                final yearToRemove = widget.years[index];
-                ref.read(yearProvider.notifier).removeYear(yearToRemove.id);
+                _showDeleteConfirmationDialog(context, index);
               },
               direction: DismissDirection.endToStart,
               background: Container(

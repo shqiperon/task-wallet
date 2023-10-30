@@ -28,6 +28,16 @@ class ExpenseNotifier extends StateNotifier<List<Expense>> {
     await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
   }
 
+  double getTotalExpenses(String year) {
+    double total = 0.0;
+    for (final expense in state) {
+      if (expense.year == year) {
+        total += expense.amount;
+      }
+    }
+    return total;
+  }
+
   Future<void> loadExpenses(String year) async {
     final db = await _getDatabase();
     final data =
@@ -83,7 +93,8 @@ Future<Database> _getYearDatabase() async {
   final db = await sql.openDatabase(
     path.join(dbPath, 'years.db'),
     onCreate: (db, version) {
-      return db.execute('CREATE TABLE years(id TEXT PRIMARY KEY, year TEXT)');
+      return db.execute(
+          'CREATE TABLE years(id TEXT PRIMARY KEY, year TEXT, password TEXT)');
     },
     version: 1,
   );
@@ -92,6 +103,30 @@ Future<Database> _getYearDatabase() async {
 
 class YearNotifier extends StateNotifier<List<Year>> {
   YearNotifier() : super(const []);
+
+  // Future<void> updateYearPassword(String id, String newPassword) async {
+  //   final db = await _getYearDatabase();
+  //   await db.update(
+  //     'years',
+  //     {'password': newPassword},
+  //     where: 'id = ?',
+  //     whereArgs: [id],
+  //   );
+  // }
+  void updateYearPassword(String yearId, String? password) async {
+    final yearToUpdate = state.firstWhere((year) => year.id == yearId);
+    yearToUpdate.password = password;
+
+    final db = await _getYearDatabase();
+    await db.update(
+      'years',
+      {'password': password},
+      where: 'id = ?',
+      whereArgs: [yearId],
+    );
+
+    state = [...state]; // Notify listeners of the change
+  }
 
   void removeYear(String id) async {
     state.removeWhere((year) => year.id == id);
@@ -106,18 +141,20 @@ class YearNotifier extends StateNotifier<List<Year>> {
       return Year(
         id: row['id'] as String,
         year: row['year'] as String,
+        password: row['password'] as String?,
       );
     }).toList();
     state = years;
   }
 
-  void addYear(String year) async {
+  void addYear(String year, {String? password}) async {
     final newYear = Year(year: year);
 
     final db = await _getYearDatabase();
     db.insert('years', {
       'id': newYear.id,
       'year': newYear.year,
+      'password': newYear.password,
     });
 
     state = [...state, newYear];

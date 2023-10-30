@@ -24,10 +24,7 @@ class _YearExpenseScreenState extends ConsumerState<YearExpenseScreen> {
   Widget build(BuildContext context) {
     final yearList = ref.watch(yearProvider);
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 70, 69, 69),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 47, 47, 47),
-        foregroundColor: Colors.white,
         title: Text(
           'Expenses of year',
           style: Theme.of(context)
@@ -54,7 +51,9 @@ class _YearExpenseScreenState extends ConsumerState<YearExpenseScreen> {
           builder: (context, snapshot) =>
               snapshot.connectionState == ConnectionState.waiting
                   ? const Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
                     )
                   : YearList(years: yearList),
         ),
