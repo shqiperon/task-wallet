@@ -28,12 +28,6 @@ class ExpenseNotifier extends StateNotifier<List<Expense>> {
     await db.delete('expenses', where: 'id = ?', whereArgs: [id]);
   }
 
-  void removeExpensesFromYear(String yearValue) async {
-    state.removeWhere((expense) => expense.year == yearValue);
-    final db = await _getDatabase();
-    await db.delete('expenses', where: 'year = ?', whereArgs: [yearValue]);
-  }
-
   double getTotalExpenses(String year) {
     double total = 0.0;
     for (final expense in state) {
