@@ -55,6 +55,9 @@ class _YearListState extends ConsumerState<YearList> {
 
     if (isConfirmed == true) {
       ref.read(yearProvider.notifier).removeYear(removedYear.id);
+      ref
+          .read(expenseProvider.notifier)
+          .removeExpensesFromYear(removedYear.year);
     } else {
       setState(() {
         widget.years.insert(index, removedYear);
