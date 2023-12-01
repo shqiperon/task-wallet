@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:task_wallet/models/task.dart';
 import 'package:task_wallet/providers/tasks_provider.dart';
 import 'package:task_wallet/screens/task.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 final formatter = DateFormat.yMd();
 
@@ -27,51 +23,6 @@ class _NewTaskState extends ConsumerState<NewTask> {
   final _descriptionController = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  Future<void> scheduleTaskNotification(Task task) async {
-    tz.initializeTimeZones();
-    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'task_channel_id',
-      'Task Notifications',
-      importance: Importance.high,
-      priority: Priority.high,
-      enableVibration: true,
-    );
-
-    const platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-    );
-
-    final taskDate = DateTime.parse(task.date);
-    final taskTime = TimeOfDay(
-      hour: task.time.hour,
-      minute: task.time.minute,
-    );
-
-    tz.initializeTimeZones();
-    final location = tz.getLocation('Europe/Tirane');
-    final notificationTime = tz.TZDateTime(
-      location,
-      taskDate.year,
-      taskDate.month,
-      taskDate.day,
-      taskTime.hour,
-      taskTime.minute,
-    );
-
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      'Task Reminder',
-      'Task: ${task.title}',
-      notificationTime,
-      platformChannelSpecifics,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
-    );
-  }
 
   void _presentDatePicker() async {
     final now = DateTime.now();
@@ -140,17 +91,11 @@ class _NewTaskState extends ConsumerState<NewTask> {
       return;
     }
     ref.read(tasksProvider.notifier).addTask(
-        _titleController.text,
-        _descriptionController.text,
-        _selectedDate!.toIso8601String().substring(0, 10),
-        _selectedTime!);
-
-    scheduleTaskNotification(Task(
-      title: _titleController.text,
-      description: _descriptionController.text,
-      date: _selectedDate!.toIso8601String().substring(0, 10),
-      time: _selectedTime!,
-    ));
+          _titleController.text,
+          _descriptionController.text,
+          _selectedDate!.toIso8601String().substring(0, 10),
+          _selectedTime!,
+        );
 
     Navigator.pop(context);
     widget.setFilter(TaskFilter.all);

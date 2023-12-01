@@ -17,32 +17,23 @@ class _TaskItemState extends State<TaskItem> {
   late Timer _timer;
   bool isTaskPassed = false;
   final currentDate = DateTime.now();
+  late TimeOfDay time;
+  late String date;
+  late String year;
+  late String month;
+  late String day;
+  late String formattedDate;
+  late bool minutesUnderTen;
+  late DateTime taskDate;
+  late bool isToday;
+  late bool isTomorrow;
+  late bool isYesterday;
 
   @override
   void initState() {
     super.initState();
-    final taskDate = DateTime.parse(widget.task.date).add(
-      Duration(
-        hours: widget.task.time.hour,
-        minutes: widget.task.time.minute,
-      ),
-    );
-    setState(() {
-      isTaskPassed = currentDate.isAfter(taskDate);
-    });
-
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      final currentDate = DateTime.now();
-      final taskDate = DateTime.parse(widget.task.date).add(
-        Duration(
-          hours: widget.task.time.hour,
-          minutes: widget.task.time.minute,
-        ),
-      );
-      setState(() {
-        isTaskPassed = currentDate.isAfter(taskDate);
-      });
-    });
+    _initializeTaskProperties();
+    _startTimer();
   }
 
   @override
@@ -51,27 +42,50 @@ class _TaskItemState extends State<TaskItem> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    TimeOfDay time = widget.task.time;
-    final date = widget.task.date;
-    final year = date.substring(2, 4);
-    final month = date.substring(5, 7);
-    final day = date.substring(8, 10);
-    final formattedDate = '$day.$month.$year';
-    final minutesUnderTen = time.minute < 10;
+  void _initializeTaskProperties() {
+    time = widget.task.time;
+    date = widget.task.date;
+    year = date.substring(2, 4);
+    month = date.substring(5, 7);
+    day = date.substring(8, 10);
+    formattedDate = '$day.$month.$year';
+    minutesUnderTen = time.minute < 10;
 
-    final taskDate = DateTime.parse(widget.task.date);
-    final isToday = currentDate.year == taskDate.year &&
+    taskDate = DateTime.parse(widget.task.date);
+    isToday = currentDate.year == taskDate.year &&
         currentDate.month == taskDate.month &&
         currentDate.day == taskDate.day;
-    final isTomorrow = currentDate.year == taskDate.year &&
+    isTomorrow = currentDate.year == taskDate.year &&
         currentDate.month == taskDate.month &&
         currentDate.day + 1 == taskDate.day;
-    final isYesterday = currentDate.year == taskDate.year &&
+    isYesterday = currentDate.year == taskDate.year &&
         currentDate.month == taskDate.month &&
         currentDate.day - 1 == taskDate.day;
 
+    final taskDateWithTime = taskDate.add(Duration(
+      hours: widget.task.time.hour,
+      minutes: widget.task.time.minute,
+    ));
+    setState(() {
+      isTaskPassed = currentDate.isAfter(taskDateWithTime);
+    });
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      final currentDate = DateTime.now();
+      final taskDate = DateTime.parse(widget.task.date).add(Duration(
+        hours: widget.task.time.hour,
+        minutes: widget.task.time.minute,
+      ));
+      setState(() {
+        isTaskPassed = currentDate.isAfter(taskDate);
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       color:
           isTaskPassed ? const Color.fromARGB(255, 35, 35, 35) : Colors.black,

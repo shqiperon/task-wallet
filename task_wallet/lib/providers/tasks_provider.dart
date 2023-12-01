@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_wallet/models/task.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:sqflite/sqlite_api.dart';
 import 'package:path/path.dart' as path;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 Future<Database> _getDatabase() async {
   final dbPath = await sql.getDatabasesPath();
@@ -20,6 +23,51 @@ Future<Database> _getDatabase() async {
 
 class TasksNotifier extends StateNotifier<List<Task>> {
   TasksNotifier() : super(const []);
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> scheduleTaskNotification(Task task) async {
+    tz.initializeTimeZones();
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'task_channel_id',
+      'Task Notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+      enableVibration: true,
+    );
+
+    const platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    final taskDate = DateTime.parse(task.date);
+    final taskTime = TimeOfDay(
+      hour: task.time.hour,
+      minute: task.time.minute,
+    );
+
+    tz.initializeTimeZones();
+    final location = tz.getLocation('Europe/Tirane');
+    final notificationTime = tz.TZDateTime(
+      location,
+      taskDate.year,
+      taskDate.month,
+      taskDate.day,
+      taskTime.hour,
+      taskTime.minute,
+    );
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      0,
+      'Task Reminder',
+      'Task: ${task.title}',
+      notificationTime,
+      platformChannelSpecifics,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
 
   void removeTaskById(String id) async {
     state.removeWhere((task) => task.id == id);
@@ -61,6 +109,7 @@ class TasksNotifier extends StateNotifier<List<Task>> {
       'date': newTask.date,
       'time': '${newTask.time.hour}:${newTask.time.minute}',
     });
+    scheduleTaskNotification(newTask);
   }
 }
 
