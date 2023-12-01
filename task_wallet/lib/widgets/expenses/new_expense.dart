@@ -42,8 +42,7 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
     'December',
   ];
 
-  String _selectedMonth =
-      monthNames[DateTime.now().month - 1]; // Initialize with the current month
+  String _selectedMonth = monthNames[DateTime.now().month - 1];
 
   void _saveExpense() {
     if (formKey.currentState!.validate()) {
@@ -63,7 +62,6 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
 
   @override
   Widget build(BuildContext context) {
-    //final currentMonth = DateTime.now().month;
     return Scaffold(
       appBar: AppBar(
         title: const Text('New Expense'),
@@ -188,12 +186,6 @@ class _NewExpenseState extends ConsumerState<NewExpense> {
                         setState(() {
                           _selectedMonth = value!;
                         });
-                        // if (int.tryParse(value!)! <= currentMonth) {
-                        //   print('current month: $currentMonth');
-                        //   setState(() {
-                        //     _selectedMonth = value;
-                        //   });
-                        // }
                       },
                     ),
                   ),

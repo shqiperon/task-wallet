@@ -54,8 +54,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
         _filteredExpenses = ref.watch(expenseProvider);
       } else {
         _filteredExpenses = ref.watch(expenseProvider).where((expense) {
-          final month =
-              expense.month.toLowerCase(); // Ensure month is in lowercase
+          final month = expense.month.toLowerCase();
           final filterMonth =
               _currentFilter.toString().split('.').last.toLowerCase();
           return month == filterMonth;

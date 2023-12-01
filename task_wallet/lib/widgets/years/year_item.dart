@@ -10,9 +10,6 @@ class YearItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final totalExpenses =
-    //     ref.read(expenseProvider.notifier).getTotalExpenses(year.year);
-
     final hasPassword = year.password != null ? true : false;
 
     void showPasswordDialog(BuildContext context) async {
@@ -124,17 +121,7 @@ class YearItem extends ConsumerWidget {
                     .titleLarge!
                     .copyWith(fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              const SizedBox(height: 10),
-              // Text(
-              //   hasPassword
-              //       ? 'Total Expenses: unlock to see'
-              //       : 'Total Expenses: \$${totalExpenses.toStringAsFixed(2)}',
-              //   style: Theme.of(context)
-              //       .textTheme
-              //       .titleMedium!
-              //       .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-              // ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -151,7 +138,7 @@ class YearItem extends ConsumerWidget {
                     },
                     icon: Icon(
                       hasPassword ? Icons.lock : Icons.lock_open,
-                      size: 35, // Set the size of the icon
+                      size: 35,
                       color: hasPassword
                           ? Colors.white
                           : const Color.fromARGB(131, 255, 255, 255),

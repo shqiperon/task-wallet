@@ -84,10 +84,9 @@ final expenseProvider = StateNotifierProvider<ExpenseNotifier, List<Expense>>(
 );
 
 final filteredExpensesProvider = Provider<List<Expense>>((ref) {
-  // Initialize the filtered expenses with all expenses by default
   return ref.watch(expenseProvider);
 });
-// year provider --------------------------------------------------------
+
 Future<Database> _getYearDatabase() async {
   final dbPath = await sql.getDatabasesPath();
   final db = await sql.openDatabase(
@@ -104,15 +103,6 @@ Future<Database> _getYearDatabase() async {
 class YearNotifier extends StateNotifier<List<Year>> {
   YearNotifier() : super(const []);
 
-  // Future<void> updateYearPassword(String id, String newPassword) async {
-  //   final db = await _getYearDatabase();
-  //   await db.update(
-  //     'years',
-  //     {'password': newPassword},
-  //     where: 'id = ?',
-  //     whereArgs: [id],
-  //   );
-  // }
   void updateYearPassword(String yearId, String? password) async {
     final yearToUpdate = state.firstWhere((year) => year.id == yearId);
     yearToUpdate.password = password;
@@ -125,7 +115,7 @@ class YearNotifier extends StateNotifier<List<Year>> {
       whereArgs: [yearId],
     );
 
-    state = [...state]; // Notify listeners of the change
+    state = [...state];
   }
 
   void removeYear(String id) async {

@@ -15,7 +15,7 @@ class _MainScreenState extends State<MainScreen> {
   final PageController pageController = PageController();
 
   final List<Widget> _screens = [
-    const HomeScreenBody(), // Your current MainScreen content
+    const HomeScreenBody(),
     const TaskScreen(),
     const YearExpenseScreen(),
   ];

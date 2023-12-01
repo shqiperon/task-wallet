@@ -32,8 +32,6 @@ class _NewTaskState extends ConsumerState<NewTask> {
 
   Future<void> scheduleTaskNotification(Task task) async {
     tz.initializeTimeZones();
-    // Obtain the device's current timezone
-    //final String timeZoneName = tz.local.name;
     const androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'task_channel_id',
       'Task Notifications',
@@ -46,17 +44,14 @@ class _NewTaskState extends ConsumerState<NewTask> {
       android: androidPlatformChannelSpecifics,
     );
 
-    // Calculate the notification time using the task's date and time
     final taskDate = DateTime.parse(task.date);
     final taskTime = TimeOfDay(
       hour: task.time.hour,
       minute: task.time.minute,
     );
 
-    // Convert the task's date and time to a TZDateTime object
     tz.initializeTimeZones();
-    final location = tz.getLocation(
-        'Europe/Tirane'); // replace with timeZoneName if you want to get location dynamically
+    final location = tz.getLocation('Europe/Tirane');
     final notificationTime = tz.TZDateTime(
       location,
       taskDate.year,
@@ -66,9 +61,8 @@ class _NewTaskState extends ConsumerState<NewTask> {
       taskTime.minute,
     );
 
-    // Schedule the notification
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      0, // Notification ID
+      0,
       'Task Reminder',
       'Task: ${task.title}',
       notificationTime,
@@ -104,9 +98,9 @@ class _NewTaskState extends ConsumerState<NewTask> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
-            primarySwatch: Colors.blue, // You can customize the color here
+            primarySwatch: Colors.blue,
             textTheme: const TextTheme(
-              titleMedium: TextStyle(fontSize: 20), // Adjust the font size here
+              titleMedium: TextStyle(fontSize: 20),
             ),
           ),
           child: child!,
@@ -151,7 +145,6 @@ class _NewTaskState extends ConsumerState<NewTask> {
         _selectedDate!.toIso8601String().substring(0, 10),
         _selectedTime!);
 
-    // Schedule the notification here
     scheduleTaskNotification(Task(
       title: _titleController.text,
       description: _descriptionController.text,

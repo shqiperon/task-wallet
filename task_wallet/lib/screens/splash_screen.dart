@@ -16,8 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToHome() async {
-    await Future.delayed(
-        const Duration(seconds: 3)); // Adjust the duration as needed
+    await Future.delayed(const Duration(seconds: 3));
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (context) => const MainScreen(),
     ));
@@ -26,12 +25,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Set the background color you want
+      backgroundColor: Colors.black,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Add your animations or images here
             Image.asset(
               'assets/images/task_wallet.png',
               fit: BoxFit.cover,

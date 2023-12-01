@@ -87,14 +87,3 @@ class _ExpensesListState extends ConsumerState<ExpensesList> {
     );
   }
 }
-
-// AnimatedContainer(
-//           duration: const Duration(milliseconds: 1000),
-//           curve: Curves.easeInOut,
-//           transform: _undoPressed
-//               ? Matrix4.translationValues(-100.0, 0.0, 0.0)
-//               : Matrix4.translationValues(0.0, 0.0, 0.0),
-//           child: ExpenseItem(
-//             widget.expenses[index],
-//           ),
-//         ),

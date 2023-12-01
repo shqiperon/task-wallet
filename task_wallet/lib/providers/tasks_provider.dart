@@ -13,13 +13,7 @@ Future<Database> _getDatabase() async {
       return db.execute(
           'CREATE TABLE tasks(id TEXT PRIMARY KEY, title TEXT, description TEXT, date TEXT, time Text)');
     },
-    // onUpgrade: (db, oldVersion, newVersion) {
-    //   // Handle schema updates here
-    //   if (oldVersion == 1 && newVersion == 2) {
-    //     db.execute('ALTER TABLE tasks ADD COLUMN time TEXT');
-    //   }
-    // },
-    version: 1, //
+    version: 1,
   );
   return db;
 }
@@ -56,7 +50,7 @@ class TasksNotifier extends StateNotifier<List<Task>> {
   void addTask(
       String title, String description, String date, TimeOfDay time) async {
     final newTask =
-        Task(title: title, description: description, date: date, time: time); //
+        Task(title: title, description: description, date: date, time: time);
     state = [...state, newTask];
 
     final db = await _getDatabase();

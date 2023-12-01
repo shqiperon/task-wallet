@@ -17,8 +17,7 @@ class FilterMonthRow extends StatefulWidget {
 }
 
 class _FilterMonthRowState extends State<FilterMonthRow> {
-  ExpenseFilter _selectedFilter = ExpenseFilter.all; // Default to "All" filter
-
+  ExpenseFilter _selectedFilter = ExpenseFilter.all;
   @override
   void initState() {
     super.initState();
@@ -45,7 +44,6 @@ class _FilterMonthRowState extends State<FilterMonthRow> {
             .map((filter) {
           final isSelected = filter == _selectedFilter;
 
-          // Add padding to create space between filters
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: GestureDetector(
@@ -56,7 +54,6 @@ class _FilterMonthRowState extends State<FilterMonthRow> {
                   });
                   widget.onFilterChanged(filter);
                 } else {
-                  // Untoggle the filter if it's already selected
                   setState(() {
                     _selectedFilter = ExpenseFilter.all;
                   });
