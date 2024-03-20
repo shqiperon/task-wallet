@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
-    as IOS;
+    as ios;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_wallet/screens/splash_screen.dart';
 
@@ -23,8 +23,8 @@ void main() async {
 Future<void> _initializeLocalNotifications() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('app_icon_black');
-  const IOS.DarwinInitializationSettings initializationSettingsIOS =
-      IOS.DarwinInitializationSettings();
+  const ios.DarwinInitializationSettings initializationSettingsIOS =
+      ios.DarwinInitializationSettings();
   InitializationSettings initializationSettings = const InitializationSettings(
     android: initializationSettingsAndroid,
     iOS: initializationSettingsIOS,
@@ -78,7 +78,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ).copyWith(
-        useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
       ),
       home: const SplashScreen(),

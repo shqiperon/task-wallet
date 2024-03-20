@@ -45,7 +45,7 @@ class CircularChart extends ConsumerWidget {
           ),
         ),
         Positioned(
-          left: 5,
+          left: 8,
           bottom: 5,
           child: ChartLegend(
             categoryAmounts: calculateAmountForCategory,
